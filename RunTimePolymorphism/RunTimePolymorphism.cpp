@@ -3,6 +3,7 @@
 #include <iostream>
 using namespace std; 
 
+// Abstract class and pure virtual function
 class CarModel {
 public:
 	int carTemplateSN;
@@ -13,9 +14,8 @@ public:
 
 	CarModel(int carTemplateSN, string companyName): carTemplateSN(carTemplateSN), companyName(companyName){ setSoldNums(); }
 
-	CarModel(CarModel *other) : carTemplateSN (other->carTemplateSN), companyName(other->companyName){ setSoldNums(); }
+	CarModel(CarModel *other) : carTemplateSN (other->carTemplateSN), companyName(other->companyName){}
 
-	
 	void static setSoldNums() {
 		CarModel::templateSoldUnits += 1;
 	}
@@ -24,16 +24,18 @@ public:
 		return CarModel::templateSoldUnits;
 	}
 
-
-	virtual void displayFeature() {
-		cout << endl<< "Car Model Features: " << endl;
+	// Creating pure virtual function to make class abstract
+	virtual void displayFeature() 
+	/*{
+		cout << endl << "Car Model Features: " << endl;
 		cout << "Car Template Serial Number: " << carTemplateSN << endl;
 		cout << "Car Company Name: " << companyName << endl;
 		cout << "Total Template sold: " << (CarModel::getSoldNums()) << endl << endl;
-	}
+	} */
+	= 0;
 };
 
-class Jaguar : public CarModel {
+class Jaguar : virtual public CarModel {
 public: 
 	int jaguarSQ;
 	double jaguarPrice;
@@ -48,6 +50,8 @@ public:
 	}
 	
 	Jaguar(Jaguar *other) : CarModel(other), jaguarSQ(other->jaguarSQ), jaguarPrice(other->jaguarPrice){ setSoldNums(); }
+
+	Jaguar(CarModel* carModel, int jaguarSQ, double jaguarPrice) : CarModel(carModel), jaguarSQ(jaguarSQ), jaguarPrice(jaguarPrice) { setSoldNums(); }
 
 	void static setSoldNums() {
 		Jaguar::jaguarSoldUnits += 1;
@@ -65,9 +69,21 @@ public:
 		cout << "Jaguar Price: " << jaguarPrice << endl;
 		cout << "Jaguar Total Sold Units: " << (Jaguar::getSoldNums()) << endl << endl;
 	}
+
+	// Static polymorphism: operator overloading
+	friend ostream& operator<< (ostream& os, const Jaguar& jaguar) {
+		os << endl << "Welcome to Jaguar." << endl;
+		os << "Company Name: " << jaguar.companyName << endl;
+		os << "Company Serial Number: " << jaguar.carTemplateSN << endl;
+		os << "Jaguar Serial Number: " << jaguar.jaguarSQ << endl;
+		os << "Jaguar Price: " << jaguar.jaguarPrice << endl;
+		os << "Jaguar Total Sold Units: " << (Jaguar::getSoldNums()) << endl << endl;
+
+		return os;
+	}
 };
 
-class Audi : public CarModel {
+class Audi : virtual public CarModel {
 public: 
 	int audiSQ;
 	double audiPrice;
@@ -82,6 +98,8 @@ public:
 	}
 
 	Audi(Audi* other) : CarModel(other), audiSQ(other->audiSQ), audiPrice(other->audiPrice) { setSoldNums(); }
+
+	Audi(CarModel* carModel, int audiSQ, double audiPrice) : CarModel(carModel), audiSQ(audiSQ), audiPrice(audiPrice) { setSoldNums(); }
 
 	void static setSoldNums() {
 		Audi::audiSoldUnits += 1;
@@ -99,6 +117,17 @@ public:
 		cout << "Audi Price in Cr: " << audiPrice << endl;
 		cout << "Audi Total Sold Units: " << (Audi::getSoldNums()) << endl << endl;
 	}
+
+	friend ostream& operator<< (ostream& os, const Audi& audi) {
+		os << endl << "Welcome to Audi." << endl;
+		os << "Company Name: " << audi.companyName << endl;
+		os << "Company Serial Number: " << audi.carTemplateSN << endl;
+		os << "Audi Serial Number: " << audi.audiSQ << endl;
+		os << "Audi Price: " << audi.audiPrice << endl;
+		os << "Audi Total Sold Units: " << (Audi::getSoldNums()) << endl << endl;
+
+		return os;
+	}
 };
 
 int CarModel::templateSoldUnits = 0;
@@ -107,14 +136,17 @@ int Audi::audiSoldUnits = 0;
 
 int main()
 {
-	Jaguar jaguar(501, "Jaguar Corp", 301, 1.5);
-	CarModel* model = &jaguar;
 
-	model->displayFeature();
+	Jaguar jaguar(501, "Jaguar Corp", 301, 1.5);
+	Jaguar jaguar2(501, "Jaguar Corp", 302, 1.75);
+	Jaguar jaguar3(501, "Jaguar Corp", 303, 2.75);
 
 	Audi audi(502, "Audi Corp", 601, 75.5);
+	Audi audi2(502, "Audi Corp", 602, 85.5);
+	Audi audi3(502, "Audi Corp", 603, 95.5);
+	Audi audi4(502, "Audi Corp", 604, 105.5);
 
-	model = &audi;
+	cout << jaguar << jaguar2 << jaguar3 << audi << audi2 << audi3 << audi4;
 
-	model->displayFeature();
+	return 0;
 }
